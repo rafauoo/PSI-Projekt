@@ -2,6 +2,7 @@ import socket
 import argparse
 import struct
 HOST_IP = '172.21.23.9'
+PORT = 12345
 DATAGRAM_SIZE = 128
 
 def process_datagram(data):
@@ -18,31 +19,22 @@ def process_datagram(data):
 
     return data_length, packet_number
 
-def create_parser():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("port")
-    return parser
-
 
 if __name__ == "__main__":
-    parser = create_parser()
-    args = parser.parse_args()
 
-    server_address_port = (HOST_IP, int(args.port))
+    server_address_port = (HOST_IP, PORT)
 
-    tcp_server_socket = socket.socket(
+    tcp_tunnel_client_socket = socket.socket(
         family=socket.AF_INET, type=socket.SOCK_STREAM)
 
-    tcp_server_socket.bind(server_address_port)
+    tcp_tunnel_client_socket.bind(server_address_port)
 
     print(
-        f'TCP server up and listening on host {server_address_port[0]}, ' +
+        f'Tunnel Client is up and listening on host {server_address_port[0]}, ' +
         f'port {server_address_port[1]}')
-    expected_packet_number = 0
-
-    tcp_server_socket.listen()
-    connection, address = tcp_server_socket.accept()
+    tcp_tunnel_client_socket.listen()
     while True:
+        connection, address = tcp_tunnel_client_socket.accept()
         data = connection.recv(DATAGRAM_SIZE)
         if not data:
             break
