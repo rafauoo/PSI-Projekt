@@ -63,7 +63,7 @@ def forward_tcp_connection(udp_socket, shared_dict, id):
             "data": data
         }
         server_address_port = (TUNNEL_SERVER_IP, TUNNEL_SERVER_PORT)
-        #message = json.dumps(message)
+        message = json.dumps(message).encode('utf-8')
         udp_socket.sendto(message, server_address_port)
 
 def start_tcp_server(udp_socket, tcp_socket, shared_dict):
@@ -79,7 +79,7 @@ def start_udp_server(udp_socket, shared_dict):
     while True:
         # Czekamy na pakiet UDP przychodzący od tunelu-serwera
         udp_response, ret_address = udp_socket.recvfrom(65535)
-        udp_response = json.loads(udp_response)
+        udp_response = json.loads(udp_response.decode('utf-8'))
         # Odczytujemy ID Połączenia
         connection = shared_dict.get_value(udp_response["conn_id"])[0]
         # Przesyłamy dane na te połączenie
