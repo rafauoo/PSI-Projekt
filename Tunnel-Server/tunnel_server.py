@@ -1,6 +1,7 @@
 import socket
 import argparse
 import threading
+import json
 import struct
 import enum
 TUNNEL_CLIENT_IP = '172.21.23.9'
@@ -68,13 +69,14 @@ def forward_tcp_connection(udp_socket, shared_dict, id):
             "data": data
         }
         server_address_port = (TUNNEL_CLIENT_IP, TUNNEL_CLIENT_PORT)
-        
+        message = json.dumps(message)
         udp_socket.sendto(message, server_address_port)
 
 def start_udp_server(udp_socket, tcp_socket, shared_dict):
     while True:
         # Czekamy na pakiet UDP przychodzący od tunelu-serwera
         udp_response, ret_address = udp_socket.recvfrom(65535)
+        udp_response = json.loads(udp_response)
         # Odczytujemy ID Połączenia
         if not udp_response["conn_id"] in shared_dict.get_all_keys():
             connection, address = tcp_socket.connect((DESTINATION_SERVER, DESTINATION_PORT))
