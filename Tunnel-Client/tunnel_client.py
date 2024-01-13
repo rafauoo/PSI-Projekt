@@ -10,6 +10,13 @@ INSIDE_PORT = 12345
 TUNNEL_SERVER_IP = '172.21.23.10'
 TUNNEL_SERVER_PORT = 12345
 
+class MsgType(enum.Enum):
+    REQUEST = 1
+    RESPONSE = 2
+    INIT = 3
+    CONN_CLOSE_CLIENT = 4
+    CONN_CLOSE_SERVER = 5
+
 class SynchronizedDict:
     def __init__(self):
         self._data = {}

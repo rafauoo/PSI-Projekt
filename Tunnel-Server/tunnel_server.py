@@ -2,6 +2,7 @@ import socket
 import argparse
 import threading
 import struct
+import enum
 from ..assets.msgtype import MsgType
 TUNNEL_CLIENT_IP = '172.21.23.9'
 TUNNEL_CLIENT_PORT = 12345
@@ -11,6 +12,13 @@ INSIDE_PORT = 12345
 DESTINATION_SERVER = '142.250.189.206' #google
 DESTINATION_PORT = 80
 DATAGRAM_SIZE = 128
+
+class MsgType(enum.Enum):
+    REQUEST = 1
+    RESPONSE = 2
+    INIT = 3
+    CONN_CLOSE_CLIENT = 4
+    CONN_CLOSE_SERVER = 5
 
 class SynchronizedDict:
     def __init__(self):
