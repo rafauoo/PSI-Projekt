@@ -74,7 +74,7 @@ def forward_tcp_connection(udp_socket, shared_dict, id):
 def start_udp_server(udp_socket, tcp_socket, shared_dict):
     while True:
         # Czekamy na pakiet UDP przychodzący od tunelu-serwera
-        udp_response, ret_address = udp_socket.recvfrom(65535)
+        udp_response, ret_address = udp_socket.recv(65535)
         # Odczytujemy ID Połączenia
         if not udp_response["conn_id"] in shared_dict.get_all_keys():
             connection, address = tcp_socket.connect((DESTINATION_SERVER, DESTINATION_PORT))
