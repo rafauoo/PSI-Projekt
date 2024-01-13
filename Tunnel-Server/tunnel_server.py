@@ -19,6 +19,9 @@ class MsgType(enum.Enum):
     INIT = 3
     CONN_CLOSE_CLIENT = 4
     CONN_CLOSE_SERVER = 5
+    
+    def __str__(self):
+        return str(self.value)
 
 class SynchronizedDict:
     def __init__(self):
