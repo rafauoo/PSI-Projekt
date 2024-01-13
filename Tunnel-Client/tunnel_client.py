@@ -108,6 +108,9 @@ def main():
     tcp_thread.start()
     udp_thread.start()
 
+    tcp_thread.join()
+    udp_thread.join()
+
 
 if __name__ == "__main__":
     main()
