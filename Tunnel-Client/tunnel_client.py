@@ -48,7 +48,7 @@ def forward_tcp_connection(udp_socket, shared_dict, id):
             message = {
                 "msg_type": 4,
                 "conn_id": id,
-                "data": data
+                "data": data.decode('utf-8')
             }
             conn = shared_dict.get_value(id)[0]
             shared_dict.remove_key(id)
@@ -60,7 +60,7 @@ def forward_tcp_connection(udp_socket, shared_dict, id):
         message = {
             "msg_type": 1,
             "conn_id": id,
-            "data": data
+            "data": data.decode('utf-8')
         }
         print(message)
         server_address_port = (TUNNEL_SERVER_IP, TUNNEL_SERVER_PORT)
@@ -84,7 +84,7 @@ def start_udp_server(udp_socket, shared_dict):
         # Odczytujemy ID Połączenia
         connection = shared_dict.get_value(udp_response["conn_id"])[0]
         # Przesyłamy dane na te połączenie
-        connection.sendall(udp_response["data"])
+        connection.sendall(udp_response["data"].encode('utf-8'))
         
 
 def main():
