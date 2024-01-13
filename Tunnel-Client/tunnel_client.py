@@ -17,8 +17,6 @@ class MsgType(enum.Enum):
     CONN_CLOSE_CLIENT = 4
     CONN_CLOSE_SERVER = 5
 
-    def __str__(self):
-        return str(self.value)
 
 class SynchronizedDict:
     def __init__(self):
@@ -48,7 +46,7 @@ def forward_tcp_connection(udp_socket, shared_dict, id):
         if not data:
             # Tu będzie trzeba zrobić obsługę jak user zamknie połączenie TCP
             message = {
-                "msg_type": MsgType.CONN_CLOSE_CLIENT,
+                "msg_type": 4,
                 "conn_id": id,
                 "data": data
             }
@@ -60,7 +58,7 @@ def forward_tcp_connection(udp_socket, shared_dict, id):
         print(data)
         
         message = {
-            "msg_type": MsgType.REQUEST,
+            "msg_type": 1,
             "conn_id": id,
             "data": data
         }

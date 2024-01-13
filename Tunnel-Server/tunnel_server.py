@@ -19,7 +19,7 @@ class MsgType(enum.Enum):
     INIT = 3
     CONN_CLOSE_CLIENT = 4
     CONN_CLOSE_SERVER = 5
-    
+
     def __str__(self):
         return str(self.value)
 
@@ -55,7 +55,7 @@ def forward_tcp_connection(udp_socket, shared_dict, id):
         if not data:
             # Tu będzie trzeba zrobić obsługę jak user zamknie połączenie TCP
             message = {
-                "msg_type": MsgType.CONN_CLOSE_SERVER,
+                "msg_type": 5,
                 "conn_id": id,
                 "data": data
             }
@@ -67,7 +67,7 @@ def forward_tcp_connection(udp_socket, shared_dict, id):
         print(data)
         
         message = {
-            "msg_type": MsgType.RESPONSE,
+            "msg_type": 2,
             "conn_id": id,
             "data": data
         }
