@@ -62,6 +62,7 @@ def forward_tcp_connection(udp_socket, shared_dict, id):
             "conn_id": id,
             "data": data
         }
+        print(message)
         server_address_port = (TUNNEL_SERVER_IP, TUNNEL_SERVER_PORT)
         message = json.dumps(message).encode('utf-8')
         udp_socket.sendto(message, server_address_port)
