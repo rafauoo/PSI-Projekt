@@ -1,63 +1,105 @@
 import socket
 import argparse
+import threading
 import struct
-HOST_IP = '172.21.23.9'
+from ..assets.msgtype import MsgType
+TUNNEL_CLIENT_IP = '172.21.23.9'
+TUNNEL_CLIENT_PORT = 12345
+TUNNEL_SERVER_IP = '172.21.23.10'
+OUTSIDE_PORT = 54321
+INSIDE_PORT = 12345
+DESTINATION_SERVER = '142.250.189.206' #google
+DESTINATION_PORT = 80
 DATAGRAM_SIZE = 128
 
-def process_datagram(data):
-    packet_number, data_length = struct.unpack("<iH", data[:6])
-    print(packet_number, data_length)
-    if data_length != len(data) - 6:
-        print("Error: Data length mismatch")
-        return None
+class SynchronizedDict:
+    def __init__(self):
+        self._data = {}
+        self._lock = threading.Lock()
 
-    expected_data = bytes((i % 256) for i in range(data_length))
-    if data[6:] != expected_data:
-        print("Error: Invalid data content")
-        return None
+    def set_value(self, key, value):
+        with self._lock:
+            self._data[key] = value
 
-    return data_length, packet_number
+    def get_value(self, key):
+        with self._lock:
+            return self._data.get(key)
 
-def create_parser():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("port")
-    return parser
+    def remove_key(self, key):
+        with self._lock:
+            if key in self._data:
+                del self._data[key]
+
+    def get_all_items(self):
+        with self._lock:
+            return dict(self._data)
+    
+    def get_all_keys(self):
+        with self._lock:
+            return self._data.keys()
+
+def forward_tcp_connection(udp_socket, shared_dict, id):
+    while True:
+        data = shared_dict.get_value(id).recv()
+        if not data:
+            # Tu będzie trzeba zrobić obsługę jak user zamknie połączenie TCP
+            message = {
+                "msg_type": MsgType.CONN_CLOSE_SERVER,
+                "conn_id": id,
+                "data": data
+            }
+            conn = shared_dict.get_value(id)
+            shared_dict.remove_key(id)
+            conn.close()
+            return
+        
+        print(data)
+        
+        message = {
+            "msg_type": MsgType.RESPONSE,
+            "conn_id": id,
+            "data": data
+        }
+        server_address_port = (TUNNEL_CLIENT_IP, TUNNEL_CLIENT_PORT)
+        
+        udp_socket.sendto(message, server_address_port)
+
+def start_udp_server(udp_socket, tcp_socket, shared_dict):
+    while True:
+        # Czekamy na pakiet UDP przychodzący od tunelu-serwera
+        udp_response, ret_address = udp_socket.recvfrom(65535)
+        # Odczytujemy ID Połączenia
+        if not udp_response["conn_id"] in shared_dict.get_all_keys():
+            connection, address = tcp_socket.connect((DESTINATION_SERVER, DESTINATION_PORT))
+            shared_dict.set_value(id, (connection, address))
+            client_thread = threading.Thread(target=forward_tcp_connection, args=(udp_socket, shared_dict, id))
+            client_thread.start()
+        connection = shared_dict.get_value(udp_response["conn_id"])
+        # Przesyłamy dane na te połączenie
+        connection.sendall(udp_response["data"])
+
+def main():
+    shared_dict = SynchronizedDict()
+    tcp_address_port = (TUNNEL_SERVER_IP, OUTSIDE_PORT)
+
+    tcp_socket = socket.socket(
+        family=socket.AF_INET, type=socket.SOCK_STREAM)
+    tcp_socket.bind(tcp_address_port)
+
+    udp_address_port = (TUNNEL_SERVER_IP, INSIDE_PORT)
+
+    udp_socket = socket.socket(
+        family=socket.AF_INET, type=socket.SOCK_STREAM)
+    udp_socket.bind(udp_address_port)
+
+    print(f'Tunnel Server is up!')
+    
+    tcp_socket.listen()
+
+    udp_thread = threading.Thread(target=start_udp_server, args=(udp_socket, tcp_socket, shared_dict))
+
+    udp_thread.start()
 
 
 if __name__ == "__main__":
-    parser = create_parser()
-    args = parser.parse_args()
-
-    server_address_port = (HOST_IP, int(args.port))
-
-    tcp_server_socket = socket.socket(
-        family=socket.AF_INET, type=socket.SOCK_STREAM)
-
-    tcp_server_socket.bind(server_address_port)
-
-    print(
-        f'TCP server up and listening on host {server_address_port[0]}, ' +
-        f'port {server_address_port[1]}')
-    expected_packet_number = 0
-
-    tcp_server_socket.listen()
-    connection, address = tcp_server_socket.accept()
-    while True:
-        data = connection.recv(DATAGRAM_SIZE)
-        if not data:
-            break
-        data_len, packet_number = process_datagram(data)
-        print()
-        print("Message: ", data)
-        print()
-        if packet_number is not None:
-            print(f'Received {data_len}B of data from {address}')
-            if expected_packet_number != packet_number:
-                print(f"Warning: Missing packet, expected {expected_packet_number}, received {packet_number}")
-                break
-            connection.sendall(packet_number.to_bytes(4, byteorder='little'))
-            print(f"Received packet is matched with expected: {expected_packet_number}")
-            expected_packet_number += 1
-        print("")
-        print("")
-    connection.close()
+    main()
