@@ -3,7 +3,6 @@ import argparse
 import threading
 import struct
 import enum
-from ..assets.msgtype import MsgType
 TUNNEL_CLIENT_IP = '172.21.23.9'
 TUNNEL_CLIENT_PORT = 12345
 TUNNEL_SERVER_IP = '172.21.23.10'
