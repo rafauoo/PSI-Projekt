@@ -48,7 +48,7 @@ def close_tcp_connection(udp_socket, shared_dict, id, server_knows=False):
         message = {
             "msg_type": 4,
             "conn_id": id,
-            "data": ''.decode('utf-8')
+            "data": ''
         }
         server_address_port = (TUNNEL_SERVER_IP, TUNNEL_SERVER_PORT)
         udp_socket.sendto(message, server_address_port)
