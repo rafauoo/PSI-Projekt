@@ -51,7 +51,7 @@ class SynchronizedDict:
 
 def forward_tcp_connection(udp_socket, shared_dict, id):
     while True:
-        data = shared_dict.get_value(id)[0].recv(65535)
+        data = shared_dict.get_value(id).recv(65535)
         if not data:
             # Tu będzie trzeba zrobić obsługę jak user zamknie połączenie TCP
             message = {
@@ -59,7 +59,7 @@ def forward_tcp_connection(udp_socket, shared_dict, id):
                 "conn_id": id,
                 "data": data.decode('utf-8')
             }
-            conn = shared_dict.get_value(id)[0]
+            conn = shared_dict.get_value(id)
             shared_dict.remove_key(id)
             conn.close()
             return
@@ -88,7 +88,7 @@ def start_udp_server(udp_socket, tcp_socket, shared_dict):
             shared_dict.set_value(udp_response["conn_id"], (new_tcp_socket))
             client_thread = threading.Thread(target=forward_tcp_connection, args=(udp_socket, shared_dict, id))
             client_thread.start()
-        connection = shared_dict.get_value(udp_response["conn_id"])[0]
+        connection = shared_dict.get_value(udp_response["conn_id"])
         # Przesyłamy dane na te połączenie
         connection.sendall(udp_response["data"].encode('utf-8'))
 
