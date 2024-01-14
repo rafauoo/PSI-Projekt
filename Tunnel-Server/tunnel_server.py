@@ -52,6 +52,7 @@ class SynchronizedDict:
 def forward_tcp_connection(udp_socket, shared_dict, id):
     while True:
         data = shared_dict.get_value(id).recv(65535)
+        print("Odebrano wiadomość z serwera zewnętrznego:", message)
         if not data:
             # Tu będzie trzeba zrobić obsługę jak user zamknie połączenie TCP
             message = {
@@ -73,6 +74,7 @@ def forward_tcp_connection(udp_socket, shared_dict, id):
         }
         server_address_port = (TUNNEL_CLIENT_IP, TUNNEL_CLIENT_PORT)
         message = json.dumps(message).encode('utf-8')
+        print("Wysłano wiadomość na tunel-klient:", message)
         udp_socket.sendto(message, server_address_port)
 
 def start_udp_server(udp_socket, tcp_socket, shared_dict):
@@ -80,7 +82,7 @@ def start_udp_server(udp_socket, tcp_socket, shared_dict):
         # Czekamy na pakiet UDP przychodzący od tunelu-serwera
         udp_response, ret_address = udp_socket.recvfrom(65535)
         udp_response = json.loads(udp_response.decode('utf-8'))
-        print(udp_response)
+        print("Otrzymano wiadomość z tunelu-klienta:", udp_response)
         # Odczytujemy ID Połączenia
         if not udp_response["conn_id"] in shared_dict.get_all_keys():
             new_tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -90,6 +92,7 @@ def start_udp_server(udp_socket, tcp_socket, shared_dict):
             client_thread.start()
         connection = shared_dict.get_value(udp_response["conn_id"])
         # Przesyłamy dane na te połączenie
+        print("Wysłano wiadomość do serwera zewnętrznego:", udp_response["data"])
         connection.sendall(udp_response["data"].encode('utf-8'))
 
 def main():
