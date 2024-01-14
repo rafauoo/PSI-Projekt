@@ -51,7 +51,7 @@ def close_tcp_connection(udp_socket, shared_dict, id, server_knows=False):
             "data": ''
         }
         server_address_port = (TUNNEL_SERVER_IP, TUNNEL_SERVER_PORT)
-        udp_socket.sendto(message, server_address_port)
+        udp_socket.sendto(json.dumps(message).encode('utf-8'), server_address_port)
         print("Wysłano wiadomość na tunel-serwer:", message)
 
 def forward_tcp_connection(udp_socket, shared_dict, id):
