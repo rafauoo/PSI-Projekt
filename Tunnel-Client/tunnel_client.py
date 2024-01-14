@@ -40,6 +40,8 @@ class SynchronizedDict:
         with self._lock:
             return dict(self._data)
 def close_tcp_connection(udp_socket, shared_dict, id, server_knows=False):
+    if not shared_dict.get_value(id):
+        return
     conn = shared_dict.get_value(id)[0]
     shared_dict.remove_key(id)
     conn.close()
