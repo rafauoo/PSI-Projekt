@@ -52,7 +52,7 @@ class SynchronizedDict:
 def forward_tcp_connection(udp_socket, shared_dict, id):
     while True:
         data = shared_dict.get_value(id).recv(65535)
-        print("Odebrano wiadomość z serwera zewnętrznego:", message)
+        print("Odebrano wiadomość z serwera zewnętrznego:", data)
         if not data:
             # Tu będzie trzeba zrobić obsługę jak user zamknie połączenie TCP
             message = {
@@ -64,8 +64,7 @@ def forward_tcp_connection(udp_socket, shared_dict, id):
             shared_dict.remove_key(id)
             conn.close()
             return
-        
-        print(data)
+
         
         message = {
             "msg_type": 2,
