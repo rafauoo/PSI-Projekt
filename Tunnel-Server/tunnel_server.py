@@ -71,13 +71,15 @@ def close_tcp_connection(udp_socket, shared_dict, id, client_knows=False):
 def forward_tcp_connection(udp_socket, shared_dict, id):
     while True:
         if not shared_dict.get_value(id):
-            return
+            break
         data = shared_dict.get_value(id).recv(65535)
+        if not shared_dict.get_value(id):
+            break
         print("Odebrano wiadomość z serwera zewnętrznego:", data, "\n")
         if not data:
             # Tu będzie trzeba zrobić obsługę jak user zamknie połączenie TCP
             close_tcp_connection(udp_socket, shared_dict, id)
-            return
+            break
         
         message = {
             "msg_type": 2,
