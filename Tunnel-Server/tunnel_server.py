@@ -84,8 +84,8 @@ def start_udp_server(udp_socket, tcp_socket, shared_dict):
         # Odczytujemy ID Połączenia
         if not udp_response["conn_id"] in shared_dict.get_all_keys():
             new_tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            connection, address = new_tcp_socket.connect((DESTINATION_SERVER, DESTINATION_PORT))
-            shared_dict.set_value(id, (connection, address))
+            new_tcp_socket.connect((DESTINATION_SERVER, DESTINATION_PORT))
+            shared_dict.set_value(id, (new_tcp_socket))
             client_thread = threading.Thread(target=forward_tcp_connection, args=(udp_socket, shared_dict, id))
             client_thread.start()
         connection = shared_dict.get_value(udp_response["conn_id"])[0]
