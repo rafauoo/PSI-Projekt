@@ -33,8 +33,10 @@ class SynchronizedDict:
 
     def remove_key(self, key):
         with self._lock:
-            if key in self._data:
+            try:
                 del self._data[key]
+            except KeyError:
+                pass  # Key not present, no need to remove
 
     def get_all_items(self):
         with self._lock:
