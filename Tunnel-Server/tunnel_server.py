@@ -86,7 +86,7 @@ def start_udp_server(udp_socket, tcp_socket, shared_dict):
             new_tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             new_tcp_socket.connect((DESTINATION_SERVER, DESTINATION_PORT))
             shared_dict.set_value(udp_response["conn_id"], (new_tcp_socket))
-            client_thread = threading.Thread(target=forward_tcp_connection, args=(udp_socket, shared_dict, id))
+            client_thread = threading.Thread(target=forward_tcp_connection, args=(udp_socket, shared_dict, udp_response["conn_id"]))
             client_thread.start()
         connection = shared_dict.get_value(udp_response["conn_id"])
         # Przesyłamy dane na te połączenie
