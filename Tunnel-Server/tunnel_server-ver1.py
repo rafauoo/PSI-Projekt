@@ -16,7 +16,7 @@ def handle_udp_connection(udp_response, connection, address, id):
     # wysyłamy zapytanie TCP do celu
     connection.sendall(udp_response["data"])
     # oczekujemy na wiadomość zwrotną TCP z celu
-    data = connection.recv()
+    data = connection.recv(65535)
 
     udp_socket = socket.socket(
         family=socket.AF_INET, type=socket.SOCK_DGRAM)
