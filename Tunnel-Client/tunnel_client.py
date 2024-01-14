@@ -76,6 +76,7 @@ def start_tcp_server(udp_socket, tcp_socket, shared_dict):
     id = 0
     while True:
         connection, address = tcp_socket.accept()
+        print("Zaakceptowano połączenie o ID:", id, "\n")
         shared_dict.set_value(id, (connection, address))
         client_thread = threading.Thread(target=forward_tcp_connection, args=(udp_socket, shared_dict, id))
         client_thread.start()
