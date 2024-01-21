@@ -2,34 +2,34 @@ version: '3'
 
 services:
   z23_project_tunnel_client:
+    container_name: moj-klient
     build:
-      context: /source
-      dockerfile: ./Dockerfile
+      context: ./source
+      dockerfile: ./dockerfile
     image: z23_project_tunnel_client
     networks:
       - z23_network
+    ports:
+      - "2137:2137"
     init: true
     tty: true
-    command: [ "python", "/app/client/tunnel_client.py" ]
+    command: [ "python", "/app/client/tunnel_client.py", "moj-serwer", "54321", "0.0.0.0", "2137", "12345"]
     volumes:
-      - /source:/app
-
-    container_name: z23_project_tunnel_client
+      - ./source:/app
 
   z23_project_tunnel_server:
+    container_name: moj-serwer
     build:
-      context: /source
-      dockerfile: ./Dockerfile
+      context: ./source/
+      dockerfile: ./dockerfile
     image: z23_project_tunnel_server
     networks:
       - z23_network
     init: true
     tty: true
-    command: [ "python", "/app/server/tunnel_server.py" ]
+    command: [ "python", "/app/server/tunnel_server.py", "moj-klient", "12345", "0.0.0.0", "2137", "54321", "google.com", "80", "80"]
     volumes:
       - ./source:/app
-
-    container_name: z23_project_tunnel_server
 
 networks:
   z23_network:
