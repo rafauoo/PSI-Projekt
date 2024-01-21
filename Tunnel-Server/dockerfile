@@ -1,3 +1,0 @@
-FROM python:3
-ADD tunnel_server.py /
-ENTRYPOINT [ "python", "./tunnel_server.py" ]

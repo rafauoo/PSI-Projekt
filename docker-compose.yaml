@@ -1,0 +1,17 @@
+version: '3'
+services:
+  tunnel_server:
+    build:
+      context: ./tunnel_server
+    ports: "12345:12345/udp"
+    networks: tunnel_network
+
+  tunnel_client:
+    build:
+      context: ./tunnel_client
+    depends_on: tunnel_server
+    networks: tunnel_network
+
+networks:
+  tunnel_network:
+    driver: bridge
