@@ -1,3 +1,0 @@
-FROM python:3
-ADD tunnel_client.py /
-ENTRYPOINT [ "python", "./tunnel_client.py", "172.21.23.10", "12345", "172.21.23.9", "54321", "12345"]
