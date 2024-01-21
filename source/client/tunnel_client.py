@@ -85,7 +85,8 @@ def forward_tcp_connection(udp_socket, shared_dict, id,
         udp_socket.sendto(message, server_address_port)
 
 
-def start_tcp_server(udp_socket, tcp_socket, shared_dict, tunnel_server_ip, tunnel_server_port):
+def start_tcp_server(udp_socket, tcp_socket, shared_dict, tunnel_server_ip,
+                     tunnel_server_port):
     id = 0
     while True:
         connection, address = tcp_socket.accept()
@@ -93,12 +94,14 @@ def start_tcp_server(udp_socket, tcp_socket, shared_dict, tunnel_server_ip, tunn
         shared_dict.set_value(id, (connection, address))
         client_thread = threading.Thread(target=forward_tcp_connection,
                                          args=(udp_socket, shared_dict, id,
-                                               tunnel_server_ip, tunnel_server_port))
+                                               tunnel_server_ip,
+                                               tunnel_server_port))
         client_thread.start()
         id += 1
 
 
-def start_udp_server(udp_socket, shared_dict, tunnel_server_ip, tunnel_server_port):
+def start_udp_server(udp_socket, shared_dict, tunnel_server_ip,
+                     tunnel_server_port):
     while True:
         # Czekamy na pakiet UDP przychodzący od tunelu-serwera
         udp_response, ret_address = udp_socket.recvfrom(65535)
@@ -115,7 +118,7 @@ def start_udp_server(udp_socket, shared_dict, tunnel_server_ip, tunnel_server_po
         try:
             connection.sendall(udp_response["data"].encode('utf-8'))
             print("Wysłano wiadomość do klienta:", udp_response["data"], "\n")
-        except BrokenPipeError as e:
+        except BrokenPipeError:
             close_tcp_connection(udp_socket, shared_dict, id,
                                  tunnel_server_ip, tunnel_server_port)
 
@@ -143,15 +146,19 @@ def main():
         family=socket.AF_INET, type=socket.SOCK_STREAM)
     tcp_socket.bind(tcp_address_port)
 
-    print(f'Tunnel Client is up and listening on host {tcp_address_port[0]}, ' +
-          f'port {tcp_address_port[1]}')
+    print(f'Tunnel Client is up and listening on host {tcp_address_port[0]}, '
+          + f'port {tcp_address_port[1]}')
 
     tcp_socket.listen()
 
-    tcp_thread = threading.Thread(target=start_tcp_server, args=(udp_socket, tcp_socket, shared_dict,
-                                                                 args.tunnel_server_ip, args.tunnel_server_port))
-    udp_thread = threading.Thread(target=start_udp_server, args=(udp_socket, shared_dict,
-                                                                 args.tunnel_server_ip, args.tunnel_server_port))
+    tcp_thread = threading.Thread(target=start_tcp_server,
+                                  args=(udp_socket, tcp_socket, shared_dict,
+                                        args.tunnel_server_ip,
+                                        args.tunnel_server_port))
+    udp_thread = threading.Thread(target=start_udp_server,
+                                  args=(udp_socket, shared_dict,
+                                        args.tunnel_server_ip,
+                                        args.tunnel_server_port))
 
     tcp_thread.start()
     udp_thread.start()
