@@ -13,12 +13,6 @@ class MsgType(enum.IntEnum):
     CONN_CLOSE_CLIENT = 4
     CONN_CLOSE_SERVER = 5
 
-# TUNNEL_SERVER_IP = '172.21.23.10'
-# TUNNEL_SERVER_PORT = 12345
-# TUNNEL_CLIENT_IP = '172.21.23.9'
-# OUTSIDE_PORT = 54321
-# INSIDE_PORT = 12345
-
 
 class SynchronizedDict:
     def __init__(self):
