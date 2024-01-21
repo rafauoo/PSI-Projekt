@@ -2,7 +2,7 @@ version: '3'
 
 services:
   z23_project_tunnel_client:
-    container_name: z23_project_tunnel_client
+    container_name: moj-klient
     build:
       context: ./source
       dockerfile: ./dockerfile
@@ -27,7 +27,7 @@ services:
       - ./source:/app
 
   z23_project_tunnel_server:
-    container_name: z23_project_tunnel_server
+    container_name: moj-serwer
     build:
       context: ./source/
       dockerfile: ./dockerfile
