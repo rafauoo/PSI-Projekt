@@ -133,6 +133,8 @@ def main():
     args.add_argument('destination_port', type=int)
     args.add_argument('datagram_size', type=int)
 
+    args = args.parse_args()
+
     shared_dict = SynchronizedDict()
 
     udp_address_port = (args.tunnel_server_ip, args.inside_port)
