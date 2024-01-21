@@ -1,9 +1,9 @@
 import socket
 import argparse
 import threading
-import json
 # from assets.msgtype import MsgType
 import enum
+import json
 
 class MsgType(enum.IntEnum):
     REQUEST = 1
