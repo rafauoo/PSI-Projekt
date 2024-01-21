@@ -55,6 +55,3 @@ services:
 networks:
   z23_network:
     driver: bridge
-    aliases:
-      - z23_project_tunnel_client
-      - z23_project_tunnel_server
