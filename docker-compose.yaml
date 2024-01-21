@@ -10,7 +10,17 @@ services:
       - z23_network
     init: true
     tty: true
-    command: python /client/tunnel_client.py
+    command:
+      [
+        "python",
+        "./client/tunnel_client.py",
+        "172.21.23.10",
+        "12345",
+        "172.21.23.9",
+        "54321",
+        "12345"
+      ]
+
     container_name: z23_project_tunnel_client
 
   z23_project_tunnel_server:
@@ -22,7 +32,20 @@ services:
       - z23_network
     init: true
     tty: true
-    command: python /server/tunnel_server.py
+    command:
+      [
+        "python",
+        "./server/tunnel_server.py",
+        "172.21.23.9",
+        "12345",
+        "172.21.23.10",
+        "54321",
+        "12345",
+        "142.250.189.206",
+        "80",
+        "128"
+      ]
+
     container_name: z23_project_tunnel_server
 
 networks:
