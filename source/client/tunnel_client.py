@@ -37,8 +37,9 @@ class SynchronizedDict:
     def get_all_items(self):
         with self._lock:
             return dict(self._data)
-        
-def close_tcp_connection(udp_socket, shared_dict, id, tunnel_server_ip, 
+
+
+def close_tcp_connection(udp_socket, shared_dict, id, tunnel_server_ip,
                          tunnel_server_port, server_knows=False):
     if not shared_dict.get_value(id):
         return
@@ -54,10 +55,12 @@ def close_tcp_connection(udp_socket, shared_dict, id, tunnel_server_ip,
             "data": ''
         }
         server_address_port = (tunnel_server_ip, tunnel_server_port)
-        udp_socket.sendto(json.dumps(message).encode('utf-8'), server_address_port)
+        udp_socket.sendto(json.dumps(message).encode(
+            'utf-8'), server_address_port)
         print("Wysłano wiadomość na tunel-serwer:", message)
 
-def forward_tcp_connection(udp_socket, shared_dict, id, 
+
+def forward_tcp_connection(udp_socket, shared_dict, id,
                            tunnel_server_ip, tunnel_server_port):
     while True:
         if not shared_dict.get_value(id):
@@ -67,10 +70,10 @@ def forward_tcp_connection(udp_socket, shared_dict, id,
             break
         print("Odebrano wiadomość od klienta:", data, "\n")
         if not data:
-            close_tcp_connection(udp_socket, shared_dict, id, 
+            close_tcp_connection(udp_socket, shared_dict, id,
                                  tunnel_server_ip, tunnel_server_port)
             break
-        
+
         message = {
             "msg_type": int(MsgType.REQUEST),
             "conn_id": id,
@@ -81,17 +84,19 @@ def forward_tcp_connection(udp_socket, shared_dict, id,
         message = json.dumps(message).encode('utf-8')
         udp_socket.sendto(message, server_address_port)
 
+
 def start_tcp_server(udp_socket, tcp_socket, shared_dict, tunnel_server_ip, tunnel_server_port):
     id = 0
     while True:
         connection, address = tcp_socket.accept()
         print("Zaakceptowano połączenie o ID:", id, "\n")
         shared_dict.set_value(id, (connection, address))
-        client_thread = threading.Thread(target=forward_tcp_connection, 
-                                         args=(udp_socket, shared_dict, id, 
+        client_thread = threading.Thread(target=forward_tcp_connection,
+                                         args=(udp_socket, shared_dict, id,
                                                tunnel_server_ip, tunnel_server_port))
         client_thread.start()
         id += 1
+
 
 def start_udp_server(udp_socket, shared_dict, tunnel_server_ip, tunnel_server_port):
     while True:
@@ -101,7 +106,7 @@ def start_udp_server(udp_socket, shared_dict, tunnel_server_ip, tunnel_server_po
         id = udp_response["conn_id"]
         print("Otrzymano wiadomość z tunelu-serwera:", udp_response, "\n")
         if MsgType(udp_response["msg_type"]) == MsgType.CONN_CLOSE_CLIENT:
-            close_tcp_connection(udp_socket, shared_dict, id, 
+            close_tcp_connection(udp_socket, shared_dict, id,
                                  tunnel_server_ip, tunnel_server_port, True)
             continue
         # Odczytujemy ID Połączenia
@@ -111,9 +116,9 @@ def start_udp_server(udp_socket, shared_dict, tunnel_server_ip, tunnel_server_po
             connection.sendall(udp_response["data"].encode('utf-8'))
             print("Wysłano wiadomość do klienta:", udp_response["data"], "\n")
         except BrokenPipeError as e:
-            close_tcp_connection(udp_socket, shared_dict, id, 
+            close_tcp_connection(udp_socket, shared_dict, id,
                                  tunnel_server_ip, tunnel_server_port)
-        
+
 
 def main():
     args = argparse.ArgumentParser()
@@ -133,14 +138,14 @@ def main():
     udp_socket = socket.socket(
         family=socket.AF_INET, type=socket.SOCK_DGRAM)
     udp_socket.bind(udp_address_port)
-    
+
     tcp_socket = socket.socket(
         family=socket.AF_INET, type=socket.SOCK_STREAM)
     tcp_socket.bind(tcp_address_port)
 
     print(f'Tunnel Client is up and listening on host {tcp_address_port[0]}, ' +
-        f'port {tcp_address_port[1]}')
-    
+          f'port {tcp_address_port[1]}')
+
     tcp_socket.listen()
 
     tcp_thread = threading.Thread(target=start_tcp_server, args=(udp_socket, tcp_socket, shared_dict,
