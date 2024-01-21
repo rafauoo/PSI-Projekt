@@ -1,17 +1,34 @@
 version: '3'
-services:
-  tunnel_server:
-    build:
-      context: ./tunnel_server
-    ports: "12345:12345/udp"
-    networks: tunnel_network
 
-  tunnel_client:
+services:
+  z23_project_tunnel_client:
     build:
-      context: ./tunnel_client
-    depends_on: tunnel_server
-    networks: tunnel_network
+      context: ./source
+      dockerfile: ./source/client/dockerfile
+    image: z23_project_tunnel_client
+    networks:
+      - z23_network
+    aliases:
+      - z23_project_tunnel_client
+    init: true
+    tty: true
+    command: python ./tunnel_client.py
+    container_name: z23_project_tunnel_client
+
+  z23_project_tunnel_server:
+    build:
+      context: ./source
+      dockerfile: ./source/server/dockerfile
+    image: z23_project_tunnel_server
+    networks:
+      - z23_network
+    aliases:
+      - z23_project_tunnel_server
+    init: true
+    tty: true
+    command: python ./tunnel_server.py
+    container_name: z23_project_tunnel_server
 
 networks:
-  tunnel_network:
+  z23_network:
     driver: bridge
