@@ -10,16 +10,7 @@ services:
       - z23_network
     init: true
     tty: true
-    command:
-      [
-        "python",
-        "/app/client/tunnel_client.py",
-        "172.21.23.10",
-        "12345",
-        "172.21.23.9",
-        "54321",
-        "12345"
-      ]
+    command: [ "python", "/app/client/tunnel_client.py" ]
     volumes:
       - /source:/app
 
@@ -34,19 +25,7 @@ services:
       - z23_network
     init: true
     tty: true
-    command:
-      [
-        "python",
-        "/app/server/tunnel_server.py",
-        "172.21.23.9",
-        "12345",
-        "172.21.23.10",
-        "54321",
-        "12345",
-        "142.250.189.206",
-        "80",
-        "128"
-      ]
+    command: [ "python", "/app/server/tunnel_server.py" ]
     volumes:
       - ./source:/app
 
