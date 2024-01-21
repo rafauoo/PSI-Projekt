@@ -4,7 +4,7 @@ services:
   z23_project_tunnel_client:
     build:
       context: /source
-      dockerfile: /compose/dockerfile
+      dockerfile: ./source/compose/dockerfile
     image: z23_project_tunnel_client
     networks:
       - z23_network
@@ -19,7 +19,7 @@ services:
   z23_project_tunnel_server:
     build:
       context: /source
-      dockerfile: /compose/dockerfile
+      dockerfile: ./source/compose/dockerfile
     image: z23_project_tunnel_server
     networks:
       - z23_network
