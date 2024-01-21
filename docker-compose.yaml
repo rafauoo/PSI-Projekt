@@ -9,8 +9,6 @@ services:
     image: z23_project_tunnel_client
     networks:
       - z23_network
-    ports:
-      - "2137:2137"
     init: true
     tty: true
     command:
