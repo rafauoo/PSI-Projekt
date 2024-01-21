@@ -8,8 +8,6 @@ services:
     image: z23_project_tunnel_client
     networks:
       - z23_network
-    aliases:
-      - z23_project_tunnel_client
     init: true
     tty: true
     command: python ./tunnel_client.py
@@ -22,8 +20,6 @@ services:
     image: z23_project_tunnel_server
     networks:
       - z23_network
-    aliases:
-      - z23_project_tunnel_server
     init: true
     tty: true
     command: python ./tunnel_server.py
