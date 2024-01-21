@@ -3,8 +3,8 @@ version: '3'
 services:
   z23_project_tunnel_client:
     build:
-      context: ./source
-      dockerfile: ./source/client/dockerfile
+      context: /source
+      dockerfile: /source/client/dockerfile
     image: z23_project_tunnel_client
     networks:
       - z23_network
@@ -13,20 +13,22 @@ services:
     command:
       [
         "python",
-        "./client/tunnel_client.py",
+        "/app/client/tunnel_client.py",
         "172.21.23.10",
         "12345",
         "172.21.23.9",
         "54321",
         "12345"
       ]
+    volumes:
+      - /source:/app
 
     container_name: z23_project_tunnel_client
 
   z23_project_tunnel_server:
     build:
-      context: ./source
-      dockerfile: ./source/server/dockerfile
+      context: /source
+      dockerfile: /source/server/dockerfile
     image: z23_project_tunnel_server
     networks:
       - z23_network
@@ -35,7 +37,7 @@ services:
     command:
       [
         "python",
-        "./server/tunnel_server.py",
+        "/app/server/tunnel_server.py",
         "172.21.23.9",
         "12345",
         "172.21.23.10",
@@ -45,9 +47,14 @@ services:
         "80",
         "128"
       ]
+    volumes:
+      - ./source:/app
 
     container_name: z23_project_tunnel_server
 
 networks:
   z23_network:
     driver: bridge
+    aliases:
+      - z23_project_tunnel_client
+      - z23_project_tunnel_server
