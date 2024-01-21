@@ -2,8 +2,9 @@ import socket
 import argparse
 import threading
 import json
-import struct
-import enum
+from assets.msgtype import MsgType
+
+
 TUNNEL_CLIENT_IP = '172.21.23.9'
 TUNNEL_CLIENT_PORT = 12345
 TUNNEL_SERVER_IP = '172.21.23.10'
@@ -13,15 +14,6 @@ DESTINATION_SERVER = '142.250.189.206' #google
 DESTINATION_PORT = 80
 DATAGRAM_SIZE = 128
 
-class MsgType(enum.Enum):
-    REQUEST = 1
-    RESPONSE = 2
-    INIT = 3
-    CONN_CLOSE_CLIENT = 4
-    CONN_CLOSE_SERVER = 5
-
-    def __str__(self):
-        return str(self.value)
 
 class SynchronizedDict:
     def __init__(self):
@@ -60,7 +52,7 @@ def close_tcp_connection(udp_socket, shared_dict, id, client_knows=False):
     print("Zamknięto połączenie TCP o ID:", id, "\n")
     if not client_knows:
         message = {
-            "msg_type": 5,
+            "msg_type": int(MsgType.CONN_CLOSE_SERVER),
             "conn_id": id,
             "data": ''
         }
@@ -77,12 +69,11 @@ def forward_tcp_connection(udp_socket, shared_dict, id):
             break
         print("Odebrano wiadomość z serwera zewnętrznego:", data, "\n")
         if not data:
-            # Tu będzie trzeba zrobić obsługę jak user zamknie połączenie TCP
             close_tcp_connection(udp_socket, shared_dict, id)
             break
         
         message = {
-            "msg_type": 2,
+            "msg_type": int(MsgType.RESPONSE),
             "conn_id": id,
             "data": data.decode('utf-8')
         }
@@ -99,7 +90,7 @@ def start_udp_server(udp_socket, shared_dict):
         print("Otrzymano wiadomość z tunelu-klienta:", udp_response, "\n")
         id = udp_response["conn_id"]
         # Klient zakończył działanie
-        if udp_response["msg_type"] == 4:
+        if MsgType(udp_response["msg_type"]) == MsgType.CONN_CLOSE_CLIENT:
             close_tcp_connection(udp_socket, shared_dict, id, True)
             continue
         # Odczytujemy ID Połączenia

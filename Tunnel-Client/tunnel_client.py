@@ -1,21 +1,14 @@
 import socket
 import argparse
 import threading
-import struct
-import enum
+from assets.msgtype import MsgType
 import json
+
 TUNNEL_CLIENT_IP = '172.21.23.9'
 OUTSIDE_PORT = 54321
 INSIDE_PORT = 12345
 TUNNEL_SERVER_IP = '172.21.23.10'
 TUNNEL_SERVER_PORT = 12345
-
-class MsgType(enum.Enum):
-    REQUEST = 1
-    RESPONSE = 2
-    INIT = 3
-    CONN_CLOSE_CLIENT = 4
-    CONN_CLOSE_SERVER = 5
 
 
 class SynchronizedDict:
@@ -51,7 +44,7 @@ def close_tcp_connection(udp_socket, shared_dict, id, server_knows=False):
     print("Zamknięto połączenie TCP o ID:", id, "\n")
     if not server_knows:
         message = {
-            "msg_type": 4,
+            "msg_type": int(MsgType.CONN_CLOSE_CLIENT),
             "conn_id": id,
             "data": ''
         }
@@ -72,7 +65,7 @@ def forward_tcp_connection(udp_socket, shared_dict, id):
             break
         
         message = {
-            "msg_type": 1,
+            "msg_type": int(MsgType.REQUEST),
             "conn_id": id,
             "data": data.decode('utf-8')
         }
@@ -98,7 +91,7 @@ def start_udp_server(udp_socket, shared_dict):
         udp_response = json.loads(udp_response.decode('utf-8'))
         id = udp_response["conn_id"]
         print("Otrzymano wiadomość z tunelu-serwera:", udp_response, "\n")
-        if udp_response["msg_type"] == 5:
+        if MsgType(udp_response["msg_type"]) == MsgType.CONN_CLOSE_CLIENT:
             close_tcp_connection(udp_socket, shared_dict, id, True)
             continue
         # Odczytujemy ID Połączenia
