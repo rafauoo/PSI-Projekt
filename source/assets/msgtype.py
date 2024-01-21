@@ -1,6 +1,6 @@
 import enum
 
-class MsgType(enum.Enum):
+class MsgType(enum.IntEnum):
     REQUEST = 1
     RESPONSE = 2
     INIT = 3
