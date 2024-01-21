@@ -124,14 +124,14 @@ def start_udp_server(udp_socket, shared_dict, destination_server, destination_po
 
 def main():
     args = argparse.ArgumentParser()
-    args.add_argument('tunnel_client_ip')
-    args.add_argument('tunnel_client_port')
-    args.add_argument('tunnel_server_ip')
-    args.add_argument('outside_port')
-    args.add_argument('inside_port')
-    args.add_argument('destination_server')
-    args.add_argument('destination_port')
-    args.add_argument('datagram_size')
+    args.add_argument('tunnel_client_ip', type=str)
+    args.add_argument('tunnel_client_port', type=int)
+    args.add_argument('tunnel_server_ip', type=str)
+    args.add_argument('outside_port', type=int)
+    args.add_argument('inside_port', type=int)
+    args.add_argument('destination_server', type=str)
+    args.add_argument('destination_port', type=int)
+    args.add_argument('datagram_size', type=int)
 
     shared_dict = SynchronizedDict()
 

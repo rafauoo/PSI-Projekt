@@ -1,3 +1,3 @@
 FROM python:3
 ADD tunnel_server.py /
-ENTRYPOINT [ "python", "./tunnel_server.py", "172.21.23.9", 12345, "172.21.23.10", 54321, 12345, "142.250.189.206", 80, 128]
+ENTRYPOINT ["python", "./tunnel_server.py", "172.21.23.9", "12345", "172.21.23.10", "54321", "12345", "142.250.189.206", "80", "128"]
