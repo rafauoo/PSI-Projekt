@@ -102,6 +102,7 @@ def start_udp_server(udp_socket, shared_dict, destination_server,
             close_tcp_connection(udp_socket, shared_dict, id, tunnel_client_ip,
                                  tunnel_client_port, True)
             continue
+
         # Odczytujemy ID Połączenia
         if id not in shared_dict.get_all_keys():
             new_tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

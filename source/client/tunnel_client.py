@@ -112,6 +112,9 @@ def start_udp_server(udp_socket, shared_dict, tunnel_server_ip,
             close_tcp_connection(udp_socket, shared_dict, id,
                                  tunnel_server_ip, tunnel_server_port, True)
             continue
+        if shared_dict.get_value(id) is None:
+            print("Nie ma połączenia o ID:", id, "\n")
+            continue
         # Odczytujemy ID Połączenia
         connection = shared_dict.get_value(id)[0]
         # Przesyłamy dane na te połączenie

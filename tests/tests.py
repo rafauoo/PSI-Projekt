@@ -8,7 +8,7 @@ import os
 
 
 def run_docker_compose(): # run docker-compose up --build
-    command_docker_compose = ['docker-compose', 'up', '--build']
+    command_docker_compose = ['docker', 'compose', 'up', '--build']
     subprocess.run(command_docker_compose)
 
 def get_container_ip(container_name): # get container IP
@@ -20,6 +20,7 @@ def get_container_ip(container_name): # get container IP
 
 def test_curl():
     result = None
+    os.chdir('..')
     compose_thread = threading.Thread(target=run_docker_compose)
     compose_thread.start() #start docker-compose on another thread
 
@@ -42,7 +43,7 @@ def test_curl():
     except Exception as e:
         result = False
     finally:
-        subprocess.run(['docker-compose', 'down'])
+        subprocess.run(['docker', 'compose', 'down'])
 
     assert result is True
 
@@ -67,7 +68,7 @@ def test_wget():
     except Exception as e:
         result = False
     finally:
-        subprocess.run(['docker-compose', 'down'])
+        subprocess.run(['docker', 'compose', 'down'])
         subprocess.run(['rm', 'index.html']) # remove index.html file
 
     assert result is True
@@ -91,6 +92,7 @@ def test_ping():
     except Exception as e:
         result = False
     finally:
-        subprocess.run(['docker-compose', 'down'])
+        subprocess.run(['docker', 'compose', 'down'])
 
     assert result is True
+
