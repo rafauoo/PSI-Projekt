@@ -43,9 +43,9 @@ services:
         "z23_project_tunnel_server",
         "2137",
         "54321",
-        "google.com",
-        "80",
-        "80"
+        "portquiz.net",
+        "8080",
+        "8080"
       ]
     volumes:
       - ./source:/app
