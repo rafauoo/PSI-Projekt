@@ -13,7 +13,7 @@ def close_tcp_connection(udp_socket, shared_dict, id, tunnel_server_ip,
     if not shared_dict.get_value(id):
         return
     conn = shared_dict.get_value(id)[0]
-    conn.sendall("\nPołączenie zostało zerwane!\n".encode('utf-8'))
+    conn.sendall("\nPolaczenie zostalo zerwane!\n".encode('iso-8859-1'))
     shared_dict.remove_key(id)
     conn.close()
     print("Zamknięto połączenie TCP o ID:", id, "\n")
@@ -25,7 +25,7 @@ def close_tcp_connection(udp_socket, shared_dict, id, tunnel_server_ip,
         }
         server_address_port = (tunnel_server_ip, tunnel_server_port)
         udp_socket.sendto(json.dumps(message).encode(
-            'utf-8'), server_address_port)
+            'iso-8859-1'), server_address_port)
         print("Wysłano wiadomość na tunel-serwer:", message)
 
 
@@ -46,11 +46,11 @@ def forward_tcp_connection(udp_socket, shared_dict, id,
         message = {
             "msg_type": int(msgtype.MsgType.REQUEST),
             "conn_id": id,
-            "data": data.decode('utf-8')
+            "data": data.decode('iso-8859-1')
         }
         print("Wysłano wiadomość na tunel-serwer:", message, "\n")
         server_address_port = (tunnel_server_ip, tunnel_server_port)
-        message = json.dumps(message).encode('utf-8')
+        message = json.dumps(message).encode('iso-8859-1')
         udp_socket.sendto(message, server_address_port)
 
 
@@ -74,7 +74,7 @@ def start_udp_server(udp_socket, shared_dict, tunnel_server_ip,
     while True:
         # Czekamy na pakiet UDP przychodzący od tunelu-serwera
         udp_response, ret_address = udp_socket.recvfrom(65535)
-        udp_response = json.loads(udp_response.decode('utf-8'))
+        udp_response = json.loads(udp_response.decode('iso-8859-1'))
         id = udp_response["conn_id"]
         print("Otrzymano wiadomość z tunelu-serwera:", udp_response, "\n")
         if msgtype.MsgType(udp_response["msg_type"]) == msgtype.MsgType.CONN_CLOSE_CLIENT:
@@ -88,7 +88,7 @@ def start_udp_server(udp_socket, shared_dict, tunnel_server_ip,
         connection = shared_dict.get_value(id)[0]
         # Przesyłamy dane na te połączenie
         try:
-            connection.sendall(udp_response["data"].encode('utf-8'))
+            connection.sendall(udp_response["data"].encode('iso-8859-1'))
             print("Wysłano wiadomość do klienta:", udp_response["data"], "\n")
         except BrokenPipeError:
             close_tcp_connection(udp_socket, shared_dict, id,

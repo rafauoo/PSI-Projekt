@@ -22,7 +22,7 @@ def close_tcp_connection(udp_socket, shared_dict, id, tunnel_client_ip,
         }
         server_address_port = (tunnel_client_ip, tunnel_client_port)
         udp_socket.sendto(json.dumps(message).encode(
-            'utf-8'), server_address_port)
+            'iso-8859-1'), server_address_port)
         print("Wysłano wiadomość na tunel-klient:", message, "\n")
 
 
@@ -43,10 +43,10 @@ def forward_tcp_connection(udp_socket, shared_dict, id, tunnel_client_ip,
         message = {
             "msg_type": int(msgtype.MsgType.RESPONSE),
             "conn_id": id,
-            "data": data.decode('utf-8')
+            "data": data.decode('iso-8859-1')
         }
         server_address_port = (tunnel_client_ip, tunnel_client_port)
-        message = json.dumps(message).encode('utf-8')
+        message = json.dumps(message).encode('iso-8859-1')
         print("Wysłano wiadomość na tunel-klient:", message, "\n")
         udp_socket.sendto(message, server_address_port)
 
@@ -57,7 +57,7 @@ def start_udp_server(udp_socket, shared_dict, destination_server,
     while True:
         # Czekamy na pakiet UDP przychodzący od tunelu-serwera
         udp_response, ret_address = udp_socket.recvfrom(65535)
-        udp_response = json.loads(udp_response.decode('utf-8'))
+        udp_response = json.loads(udp_response.decode('iso-8859-1'))
         print("Otrzymano wiadomość z tunelu-klienta:", udp_response, "\n")
         id = udp_response["conn_id"]
         # Klient zakończył działanie
@@ -79,7 +79,7 @@ def start_udp_server(udp_socket, shared_dict, destination_server,
         connection = shared_dict.get_value(id)
         # Przesyłamy dane na te połączenie
         try:
-            connection.sendall(udp_response["data"].encode('utf-8'))
+            connection.sendall(udp_response["data"].encode('iso-8859-1'))
             print("Wysłano wiadomość do serwera zewnętrznego:",
                   udp_response["data"], "\n")
         except BrokenPipeError:
