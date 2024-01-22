@@ -1,4 +1,6 @@
 FROM python:3
 WORKDIR /app
+COPY ./assets/msgtype.py /app/assets/msgtype.py
+COPY ./assets/__init__.py /app/assets/__init__.py
 COPY . /app
 EXPOSE 80

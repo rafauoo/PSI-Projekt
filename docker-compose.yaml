@@ -18,7 +18,7 @@ services:
         "z23_project_tunnel_server",
         "54321",
         "z23_project_tunnel_client",
-        "2137",
+        "1234",
         "12345"
       ]
     volumes:
@@ -27,7 +27,7 @@ services:
   z23_project_tunnel_server:
     container_name: z23_project_tunnel_server
     build:
-      context: ./source/
+      context: ./source
       dockerfile: ./dockerfile
     image: z23_project_tunnel_server
     networks:
@@ -41,7 +41,7 @@ services:
         "z23_project_tunnel_client",
         "12345",
         "z23_project_tunnel_server",
-        "2137",
+        "1234",
         "54321",
         "portquiz.net",
         "8080",

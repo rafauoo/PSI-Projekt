@@ -1,42 +1,11 @@
+import sys
+sys.path.append('/app')
+
 import socket
 import argparse
 import threading
-# from assets.msgtype import MsgType
-import enum
+from assets import msgtype, dict
 import json
-
-
-class MsgType(enum.IntEnum):
-    REQUEST = 1
-    RESPONSE = 2
-    INIT = 3
-    CONN_CLOSE_CLIENT = 4
-    CONN_CLOSE_SERVER = 5
-
-
-class SynchronizedDict:
-    def __init__(self):
-        self._data = {}
-        self._lock = threading.Lock()
-
-    def set_value(self, key, value):
-        with self._lock:
-            self._data[key] = value
-
-    def get_value(self, key):
-        with self._lock:
-            return self._data.get(key)
-
-    def remove_key(self, key):
-        with self._lock:
-            try:
-                del self._data[key]
-            except KeyError:
-                pass  # Key not present, no need to remove
-
-    def get_all_items(self):
-        with self._lock:
-            return dict(self._data)
 
 
 def close_tcp_connection(udp_socket, shared_dict, id, tunnel_server_ip,
@@ -50,7 +19,7 @@ def close_tcp_connection(udp_socket, shared_dict, id, tunnel_server_ip,
     print("Zamknięto połączenie TCP o ID:", id, "\n")
     if not server_knows:
         message = {
-            "msg_type": int(MsgType.CONN_CLOSE_CLIENT),
+            "msg_type": int(msgtype.MsgType.CONN_CLOSE_CLIENT),
             "conn_id": id,
             "data": ''
         }
@@ -75,7 +44,7 @@ def forward_tcp_connection(udp_socket, shared_dict, id,
             break
 
         message = {
-            "msg_type": int(MsgType.REQUEST),
+            "msg_type": int(msgtype.MsgType.REQUEST),
             "conn_id": id,
             "data": data.decode('utf-8')
         }
@@ -108,7 +77,7 @@ def start_udp_server(udp_socket, shared_dict, tunnel_server_ip,
         udp_response = json.loads(udp_response.decode('utf-8'))
         id = udp_response["conn_id"]
         print("Otrzymano wiadomość z tunelu-serwera:", udp_response, "\n")
-        if MsgType(udp_response["msg_type"]) == MsgType.CONN_CLOSE_CLIENT:
+        if msgtype.MsgType(udp_response["msg_type"]) == msgtype.MsgType.CONN_CLOSE_CLIENT:
             close_tcp_connection(udp_socket, shared_dict, id,
                                  tunnel_server_ip, tunnel_server_port, True)
             continue
@@ -136,7 +105,7 @@ def main():
 
     args = args.parse_args()
 
-    shared_dict = SynchronizedDict()
+    shared_dict = dict.SynchronizedDict()
     tcp_address_port = (args.tunnel_client_ip, args.outside_port)
     udp_address_port = (args.tunnel_client_ip, args.inside_port)
 
